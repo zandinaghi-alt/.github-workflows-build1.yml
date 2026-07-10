@@ -2,28 +2,21 @@ package com.mahdi.voiceassistant
 
 import android.content.Context
 
-/**
- * پردازشگر ساده و مبتنی بر قانون برای دستورهای فارسی.
- * این نسخه‌ی اولیه است؛ بعداً می‌شه به‌جاش یک مدل زبانی (مثل Claude API)
- * برای تشخیص دقیق‌تر منظور جایگزین کرد.
- */
 object CommandProcessor {
 
-    // نتیجه‌ی پردازش: متنی که باید با TTS خونده بشه
     fun process(context: Context, spokenText: String): String {
         val text = spokenText.trim()
 
+        val readKeywords = listOf("بخون", "بخوان", "بگو چی", "چی نوشته", "چی گفته")
+        val sendKeywords = listOf("پیامک بده", "پیامک بفرست", "اس ام اس بده", "اس ام اس بفرست", "پیام بده", "پیام بفرست")
+
         return when {
-            // "پیامک های جدید رو بخون" / "آخرین پیامک چیه"
-            text.contains("پیامک") && (text.contains("بخون") || text.contains("جدید") || text.contains("آخرین")) -> {
+            text.contains("پیامک") && readKeywords.any { text.contains(it) } -> {
                 readLatestSms(context)
             }
-
-            // "به علی پیامک بده بنویس سلام حالت خوبه" یا "به 0912... پیامک بده بگو ..."
-            text.contains("پیامک بده") || text.contains("پیامک بفرست") -> {
+            sendKeywords.any { text.contains(it) } -> {
                 handleSendSms(context, text)
             }
-
             else -> "متوجه دستور نشدم. می‌تونی بگی «پیامک‌های جدید رو بخون» یا «به [اسم] پیامک بده بنویس [متن]»"
         }
     }
@@ -40,21 +33,30 @@ object CommandProcessor {
     }
 
     private fun handleSendSms(context: Context, text: String): String {
-        // الگوی ساده: "به <نام/شماره> پیامک بده بنویس <متن>"
-        val nameRegex = Regex("به (.+?) پیامک (بده|بفرست)")
-        val bodyRegex = Regex("(بنویس|بگو) (.+)")
+        val simpleRegex = Regex("به (.+?) بگو (.+)")
+        val nameRegex = Regex("(به|برای) (.+?) (پیامک|پیام|اس ام اس) (بده|بفرست)")
+        val bodyRegex = Regex("(بنویس|بگو|بنویسم|بنویسید)\\s+(.+)")
+
+        var target: String? = null
+        var body: String? = null
 
         val nameMatch = nameRegex.find(text)
-        val bodyMatch = bodyRegex.find(text)
-
-        val target = nameMatch?.groupValues?.get(1)?.trim()
-        val body = bodyMatch?.groupValues?.get(2)?.trim()
-
-        if (target == null || body.isNullOrEmpty()) {
-            return "لطفاً بگو: به [اسم یا شماره] پیامک بده بنویس [متن پیام]"
+        if (nameMatch != null) {
+            target = nameMatch.groupValues[2].trim()
+            val bodyMatch = bodyRegex.find(text)
+            body = bodyMatch?.groupValues?.get(2)?.trim()
+        } else {
+            val simpleMatch = simpleRegex.find(text)
+            if (simpleMatch != null) {
+                target = simpleMatch.groupValues[1].trim()
+                body = simpleMatch.groupValues[2].trim()
+            }
         }
 
-        // اگر شماره باشه مستقیم استفاده می‌کنیم، وگرنه از مخاطب‌ها پیدا می‌کنیم
+        if (target.isNullOrEmpty() || body.isNullOrEmpty()) {
+            return "متوجه نشدم به کی و چی بفرستم. مثلاً بگو: «به علی بگو سلام امروز میای؟»"
+        }
+
         val phoneNumber = if (target.all { it.isDigit() || it == '+' }) {
             target
         } else {
@@ -62,7 +64,7 @@ object CommandProcessor {
         }
 
         if (phoneNumber == null) {
-            return "شماره‌ای برای $target پیدا نکردم"
+            return "شماره‌ای برای $target تو مخاطبینت پیدا نکردم"
         }
 
         SmsHelper.sendSms(phoneNumber, body)
