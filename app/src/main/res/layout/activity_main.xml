@@ -5,6 +5,17 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
+    <ImageView
+        android:id="@+id/robotImage"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/robot_icon"
+        android:contentDescription="ربات دستیار"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp" />
+
     <TextView
         android:id="@+id/statusText"
         android:layout_width="0dp"
@@ -12,10 +23,10 @@
         android:text="برای صحبت روی دکمه بزن"
         android:textSize="18sp"
         android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/robotImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp" />
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:id="@+id/transcriptText"

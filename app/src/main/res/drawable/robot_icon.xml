@@ -1,0 +1,71 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+
+    <!-- آنتن -->
+    <path
+        android:pathData="M80,10 L80,25"
+        android:strokeColor="#4A5568"
+        android:strokeWidth="4" />
+    <path
+        android:pathData="M80,6 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0"
+        android:fillColor="#F6AD55" />
+
+    <!-- سر -->
+    <path
+        android:pathData="M35,30 h90 a15,15 0 0 1 15,15 v55 a15,15 0 0 1 -15,15 h-90 a15,15 0 0 1 -15,-15 v-55 a15,15 0 0 1 15,-15 z"
+        android:fillColor="#EDF2F7"
+        android:strokeColor="#4A5568"
+        android:strokeWidth="3" />
+
+    <!-- صفحه‌ی صورت -->
+    <path
+        android:pathData="M50,45 h60 a8,8 0 0 1 8,8 v30 a8,8 0 0 1 -8,8 h-60 a8,8 0 0 1 -8,-8 v-30 a8,8 0 0 1 8,-8 z"
+        android:fillColor="#2D3748" />
+
+    <!-- چشم چپ -->
+    <path
+        android:pathData="M68,65 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0"
+        android:fillColor="#63B3ED" />
+
+    <!-- چشم راست -->
+    <path
+        android:pathData="M92,65 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0"
+        android:fillColor="#63B3ED" />
+
+    <!-- لبخند -->
+    <path
+        android:pathData="M65,78 Q80,88 95,78"
+        android:strokeColor="#63B3ED"
+        android:strokeWidth="3"
+        android:fillColor="#00000000" />
+
+    <!-- گوش چپ -->
+    <path
+        android:pathData="M20,55 h10 v25 h-10 a8,8 0 0 1 -8,-8 v-9 a8,8 0 0 1 8,-8 z"
+        android:fillColor="#CBD5E0"
+        android:strokeColor="#4A5568"
+        android:strokeWidth="2" />
+
+    <!-- گوش راست -->
+    <path
+        android:pathData="M140,55 h-10 v25 h10 a8,8 0 0 0 8,-8 v-9 a8,8 0 0 0 -8,-8 z"
+        android:fillColor="#CBD5E0"
+        android:strokeColor="#4A5568"
+        android:strokeWidth="2" />
+
+    <!-- گردن -->
+    <path
+        android:pathData="M70,115 h20 v10 h-20 z"
+        android:fillColor="#A0AEC0" />
+
+    <!-- بدن -->
+    <path
+        android:pathData="M45,125 h70 a10,10 0 0 1 10,10 v15 a10,10 0 0 1 -10,10 h-70 a10,10 0 0 1 -10,-10 v-15 a10,10 0 0 1 10,-10 z"
+        android:fillColor="#EDF2F7"
+        android:strokeColor="#4A5568"
+        android:strokeWidth="3" />
+
+</vector>
