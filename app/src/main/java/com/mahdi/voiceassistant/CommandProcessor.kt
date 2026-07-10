@@ -4,13 +4,17 @@ import android.content.Context
 
 object CommandProcessor {
 
-    fun process(context: Context, spokenText: String): String {
+    /**
+     * پردازش دستور. چون بعضی مسیرها (مثل سوال از هوش مصنوعی) نیاز به اینترنت
+     * و زمان دارن، این تابع از callback استفاده می‌کنه به‌جای return مستقیم.
+     */
+    fun process(context: Context, spokenText: String, onResult: (String) -> Unit) {
         val text = spokenText.trim()
 
         val readKeywords = listOf("بخون", "بخوان", "بگو چی", "چی نوشته", "چی گفته")
         val sendSmsKeywords = listOf("پیامک بده", "پیامک بفرست", "اس ام اس بده", "اس ام اس بفرست", "پیام بده", "پیام بفرست")
         val openAppKeywords = listOf("باز کن")
-        val callKeywords = listOf("زنگ بزن", "تماس بگیر", "تماس بگیر با")
+        val callKeywords = listOf("زنگ بزن", "تماس بگیر")
         val searchKeywords = listOf("گوگل کن", "جستجو کن", "بگرد")
         val flashlightKeywords = listOf("چراغ قوه")
         val wifiKeywords = listOf("وایفای", "وای فای", "وای‌فای")
@@ -18,53 +22,58 @@ object CommandProcessor {
         val volumeUpKeywords = listOf("صدا رو زیاد کن", "صدا رو ببر بالا")
         val volumeDownKeywords = listOf("صدا رو کم کن", "صدا رو ببر پایین")
 
-        return when {
+        when {
             flashlightKeywords.any { text.contains(it) } -> {
                 val ok = DeviceSettingsHelper.toggleFlashlight(context)
-                if (ok) "چراغ قوه رو عوض کردم" else "نتونستم چراغ قوه رو کنترل کنم"
+                onResult(if (ok) "چراغ قوه رو عوض کردم" else "نتونستم چراغ قوه رو کنترل کنم")
             }
 
             volumeUpKeywords.any { text.contains(it) } -> {
                 DeviceSettingsHelper.adjustVolume(context, increase = true)
-                "صدا رو زیاد کردم"
+                onResult("صدا رو زیاد کردم")
             }
 
             volumeDownKeywords.any { text.contains(it) } -> {
                 DeviceSettingsHelper.adjustVolume(context, increase = false)
-                "صدا رو کم کردم"
+                onResult("صدا رو کم کردم")
             }
 
             wifiKeywords.any { text.contains(it) } -> {
                 DeviceSettingsHelper.openWifiSettings(context)
-                "تنظیمات وای‌فای رو باز کردم"
+                onResult("تنظیمات وای‌فای رو باز کردم")
             }
 
             soundSettingsKeywords.any { text.contains(it) } -> {
                 DeviceSettingsHelper.openSoundSettings(context)
-                "تنظیمات صدا رو باز کردم"
+                onResult("تنظیمات صدا رو باز کردم")
             }
 
             text.contains("پیامک") && readKeywords.any { text.contains(it) } -> {
-                readLatestSms(context)
+                onResult(readLatestSms(context))
             }
 
             sendSmsKeywords.any { text.contains(it) } -> {
-                handleSendSms(context, text)
+                onResult(handleSendSms(context, text))
             }
 
             callKeywords.any { text.contains(it) } -> {
-                handleCall(context, text)
+                onResult(handleCall(context, text))
             }
 
             searchKeywords.any { text.contains(it) } -> {
-                handleSearch(context, text)
+                onResult(handleSearch(context, text))
             }
 
             openAppKeywords.any { text.contains(it) } -> {
-                handleOpenApp(context, text)
+                onResult(handleOpenApp(context, text))
             }
 
-            else -> "متوجه دستور نشدم. می‌تونی بگی «پیامک‌های جدید رو بخون»، «اینستاگرام رو باز کن»، «به علی زنگ بزن»، یا «آب‌وهوا رو گوگل کن»"
+            else -> {
+                // هیچ دستور از پیش تعریف‌شده‌ای مچ نشد؛ سوال رو می‌فرستیم به هوش مصنوعی
+                ClaudeApiHelper.ask(context, text) { aiResponse ->
+                    onResult(aiResponse)
+                }
+            }
         }
     }
 
@@ -141,7 +150,6 @@ object CommandProcessor {
     }
 
     private fun handleSearch(context: Context, text: String): String {
-        // "آب و هوا رو گوگل کن" یا "تو گوگل بگرد قیمت دلار"
         val query = text
             .replace("تو گوگل بگرد", "")
             .replace("رو گوگل کن", "")

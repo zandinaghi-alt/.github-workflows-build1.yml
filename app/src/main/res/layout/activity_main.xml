@@ -5,6 +5,16 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_preferences"
+        android:contentDescription="تنظیمات"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <ImageView
         android:id="@+id/robotImage"
         android:layout_width="140dp"
